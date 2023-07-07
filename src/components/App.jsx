@@ -3,9 +3,6 @@ import FeedbackForm from './feedback-values/FeedbackForm';
 import StatisticsRendes from './statistics/StatisticsRendes';
 
 export class App extends Component {
-  // constructor() {
-  //   super();
-  // }
   state = {
     good: 0,
     neutral: 0,
@@ -16,16 +13,15 @@ export class App extends Component {
     this.setState({
       [value]: this.state[value] + 1,
     });
-    //   prevState => {
-    //   // Dacă ne uităm la starea transmisă funcției callback în timpul apelului acesteia,
-    //   // vom obține starea curentă la momentul actualizării.
-    //   console.log(prevState[value]); // va fi diferit la fiecare iterație
+  };
 
-    //   return { [value]: prevState[value] + 1 };
-    // });
+  countTotalFeedback = () => {
+    const totalFeedback = this.state.good + this.state.neutral + this.state.bad;
+    return totalFeedback;
   };
 
   render() {
+    const totalFeedback = this.countTotalFeedback();
     return (
       <>
         <section className="feedback">
@@ -33,8 +29,16 @@ export class App extends Component {
           <FeedbackForm addFeedback={this.addFeedback} />
         </section>
         <section className="statistics">
-          <SectionTitle title={'Statistics'} />
-          <StatisticsRendes {...this.state} />
+          {totalFeedback === 0 && (
+            <Notification message="There is no feedback" />
+          )}
+          {totalFeedback !== 0 && <SectionTitle title={'Statistics'} />}
+          {totalFeedback !== 0 && (
+            <StatisticsRendes
+              {...this.state}
+              countTotalFeedback={totalFeedback}
+            />
+          )}
         </section>
       </>
     );
@@ -43,4 +47,8 @@ export class App extends Component {
 
 const SectionTitle = ({ title }) => {
   return <h2 className="section-title">{title}</h2>;
+};
+
+const Notification = ({ message }) => {
+  return <h3 className="no-message">{message}</h3>;
 };
